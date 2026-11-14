@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ghibliboxd</title>
+  <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---------- basic page settings ---------- */
+    body {
+      margin: 0;
+      font-family: 'DM Sans', Arial, sans-serif;
+      background-color: #fffafb;
+      color: #26362c;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: #2a4a37;
+    }
+
+    /* ---------- top bar ---------- */
+    header {
+      background-color: #e6f4e8;
+      border-bottom: 1px solid #d4e6d8;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-family: 'Young Serif', Georgia, serif;
+      font-size: 28px;
+      color: #2a4a37;
+    }
+
+    .logo span {
+      color: #e98aa8;
+    }
+
+    /* your name next to the logo */
+    .logo .name {
+      color: #6b8272;
+      font-size: 20px;
+    }
+
+    nav button, nav a {
+      color: #2a4a37;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 18px;
+      border-radius: 30px;
+    }
+
+    nav button:hover, nav a:hover {
+      background-color: #fbdbe5;
+    }
+
+    /* the tab you are on gets a dark green pill */
+    nav button.active {
+      background-color: #2a4a37;
+      color: #e6f4e8;
+    }
+
+    /* ---------- intro ---------- */
+    .intro {
+      background: linear-gradient(#e6f4e8, #fffafb);
+      padding: 50px 20px 30px 20px;
+    }
+
+    .box {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .intro h1 {
+      font-family: 'Young Serif', Georgia, serif;
+      font-weight: normal;
+      font-size: 48px;
+      color: #2a4a37;
+      max-width: 600px;
+      margin: 0 0 10px 0;
+    }
+
+    .intro p {
+      color: #6b8272;
+    }
+
+    .progress-bar {
+      max-width: 400px;
+      height: 12px;
+      background-color: white;
+      border: 2px solid #a9d4b3;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: #e98aa8;
+    }
+
+    /* ---------- main area ---------- */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 20px 80px 20px;
+    }
+
+    h2 {
+      font-family: 'Young Serif', Georgia, serif;
+      font-weight: normal;
+      color: #2a4a37;
+    }
+
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .chip {
+      background-color: #e6f4e8;
+      padding: 7px 16px;
+      border-radius: 30px;
+      font-weight: bold;
+    }
+
+    .chip:hover {
+      background-color: #fbdbe5;
+    }
+
+    .chip.active {
+      background-color: #2a4a37;
+      color: #e6f4e8;
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 2px solid #d4e6d8;
+      border-radius: 10px;
+    }
+
+    #count {
+      color: #6b8272;
+      margin-bottom: 15px;
+    }
+
+    /* ---------- film grid ---------- */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      text-align: left;
+      color: #26362c;
+    }
+
+    .poster {
+      position: relative;
+    }
+
+    .poster img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+      border: 3px solid #a9d4b3;
+      box-sizing: border-box;
+    }
+
+    .card:hover img {
+      border-color: #e98aa8;
+    }
+
+    .seen {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: #a9d4b3;
+      color: #2a4a37;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 26px;
+      font-weight: bold;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .card-info {
+      font-size: 13px;
+      color: #6b8272;
+    }
+
+    .empty {
+      text-align: center;
+      color: #6b8272;
+      padding: 50px 10px;
+    }
+
+    /* ---------- stars ---------- */
+    .star {
+      font-size: 32px;
+      color: #d4e6d8;
+      cursor: pointer;
+    }
+
+    .star.full {
+      color: #e98aa8;
+    }
+
+    .star.half {
+      color: #f4c2d3;
+    }
+
+    .small .star {
+      font-size: 16px;
+      cursor: default;
+    }
+
+    /* ---------- pop-up (film window) ---------- */
+    dialog {
+      border: none;
+      border-radius: 18px;
+      padding: 25px;
+      width: 600px;
+      max-width: 90%;
+      background-color: #fffafb;
+    }
+
+    dialog::backdrop {
+      background-color: rgba(42, 74, 55, 0.4);
+    }
+
+    .popup {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .popup img {
+      width: 170px;
+      border-radius: 10px;
+    }
+
+    .popup h3 {
+      font-family: 'Young Serif', Georgia, serif;
+      font-weight: normal;
+      font-size: 24px;
+      color: #2a4a37;
+      margin: 0 0 5px 0;
+    }
+
+    .popup label {
+      display: block;
+      font-weight: bold;
+      color: #2a4a37;
+      margin: 12px 0 4px 0;
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 80px;
+    }
+
+    .btn {
+      background-color: #2a4a37;
+      color: #e6f4e8;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-weight: bold;
+      margin-right: 8px;
+      margin-top: 15px;
+    }
+
+    .btn.pink {
+      background-color: #fbdbe5;
+      color: #7a3550;
+    }
+
+    #close {
+      float: right;
+      font-size: 28px;
+    }
+
+    /* ---------- diary ---------- */
+    .stats {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background-color: #e6f4e8;
+      padding: 12px 22px;
+      border-radius: 14px;
+    }
+
+    .stat.pink {
+      background-color: #fbdbe5;
+    }
+
+    .stat b {
+      display: block;
+      font-family: 'Young Serif', Georgia, serif;
+      font-weight: normal;
+      font-size: 26px;
+      color: #2a4a37;
+    }
+
+    .stat span {
+      font-size: 13px;
+      color: #6b8272;
+    }
+
+    .entry {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      border-bottom: 1px solid #d4e6d8;
+      padding: 14px 0;
+      width: 100%;
+      text-align: left;
+      color: #26362c;
+    }
+
+    .entry img {
+      width: 64px;
+      border-radius: 6px;
+    }
+
+    .entry b {
+      font-family: 'Young Serif', Georgia, serif;
+      font-weight: normal;
+      font-size: 18px;
+      color: #2a4a37;
+    }
+
+    .entry p {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #6b8272;
+    }
+
+    /* ---------- small message at the bottom ---------- */
+    #toast {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #2a4a37;
+      color: #e6f4e8;
+      padding: 10px 22px;
+      border-radius: 30px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">ghibli<span>boxd</span> <span class="name">| Radhika Gola</span></div>
+    <nav>
+      <button id="tab-films" class="active" onclick="showTab('films')">films</button>
+      <button id="tab-diary" onclick="showTab('diary')">my diary</button>
+      <a href="https://www.ghibli.jp/" target="_blank">official studio ghibli website</a>
+    </nav>
+  </header>
+
+  <div class="intro">
+    <div class="box">
+      <h1>every studio ghibli film, one diary.</h1>
+      <p>mark what you have watched, rate with half stars, and write a short review. it saves on this device.</p>
+      <div class="progress-bar"><div id="progress-fill"></div></div>
+      <p id="progress-text"></p>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- FILMS TAB -->
+    <div id="films-page">
+      <div class="tools">
+        <button class="chip active" id="chip-all" onclick="setFilter('all')">all</button>
+        <button class="chip" id="chip-seen" onclick="setFilter('seen')">watched</button>
+        <button class="chip" id="chip-unseen" onclick="setFilter('unseen')">not yet</button>
+
+        <input type="search" id="search" placeholder="search title" oninput="showFilms()">
+        <select id="director" onchange="showFilms()">
+          <option value="">all directors</option>
+        </select>
+        <select id="sort" onchange="showFilms()">
+          <option value="oldest">oldest first</option>
+          <option value="newest">newest first</option>
+          <option value="title">title a to z</option>
+          <option value="rating">my rating</option>
+        </select>
+      </div>
+      <div id="count"></div>
+      <div id="grid"></div>
+    </div>
+
+    <!-- DIARY TAB -->
+    <div id="diary-page" style="display: none;">
+      <h2>my diary</h2>
+      <div class="stats" id="stats"></div>
+      <div id="entries"></div>
+    </div>
+
+  </main>
+
+  <!-- POP-UP WINDOW FOR LOGGING A FILM -->
+  <dialog id="popup">
+    <button id="close" onclick="closePopup()">&times;</button>
+    <div class="popup">
+      <img id="popup-poster" src="" alt="">
+      <div>
+        <h3 id="popup-title"></h3>
+        <div id="popup-facts"></div>
+
+        <label>your rating</label>
+        <div id="popup-stars"></div>
+        <div id="popup-rating-text"></div>
+
+        <label for="popup-date">date watched</label>
+        <input type="date" id="popup-date">
+
+        <label for="popup-review">review</label>
+        <textarea id="popup-review" placeholder="what did you think?"></textarea>
+
+        <button class="btn" onclick="saveFilm()">save to diary</button>
+        <button class="btn pink" id="remove-btn" onclick="removeFilm()">remove</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toast"></div>
+
+  <script>
+    // ---------- the list of films ----------
+    var films = [
+  { title: "Nausicaä of the Valley of the Wind", year: 1984, director: "Hayao Miyazaki", mins: 117, poster: "posters/nausicaa-of-the-valley-of-the-wind.jpeg" },
+  { title: "Castle in the Sky", year: 1986, director: "Hayao Miyazaki", mins: 124, poster: "posters/castle-in-the-sky.jpeg" },
+  { title: "Grave of the Fireflies", year: 1988, director: "Isao Takahata", mins: 89, poster: "posters/grave-of-the-fireflies.jpeg" },
+  { title: "My Neighbor Totoro", year: 1988, director: "Hayao Miyazaki", mins: 86, poster: "posters/my-neighbor-totoro.jpeg" },
+  { title: "Kiki's Delivery Service", year: 1989, director: "Hayao Miyazaki", mins: 103, poster: "posters/kikis-delivery-service.jpeg" },
+  { title: "Only Yesterday", year: 1991, director: "Isao Takahata", mins: 118, poster: "posters/only-yesterday.jpeg" },
+  { title: "Porco Rosso", year: 1992, director: "Hayao Miyazaki", mins: 94, poster: "posters/porco-rosso.jpeg" },
+  { title: "Ocean Waves", year: 1993, director: "Tomomi Mochizuki", mins: 72, poster: "posters/ocean-waves.jpeg" },
+  { title: "Pom Poko", year: 1994, director: "Isao Takahata", mins: 119, poster: "posters/pom-poko.jpeg" },
+  { title: "Whisper of the Heart", year: 1995, director: "Yoshifumi Kondō", mins: 111, poster: "posters/whisper-of-the-heart.jpeg" },
+  { title: "Princess Mononoke", year: 1997, director: "Hayao Miyazaki", mins: 134, poster: "posters/princess-mononoke.jpeg" },
+  { title: "My Neighbors the Yamadas", year: 1999, director: "Isao Takahata", mins: 104, poster: "posters/my-neighbors-the-yamadas.jpeg" },
+  { title: "Spirited Away", year: 2001, director: "Hayao Miyazaki", mins: 125, poster: "posters/spirited-away.jpeg" },
+  { title: "The Cat Returns", year: 2002, director: "Hiroyuki Morita", mins: 75, poster: "posters/the-cat-returns.jpeg" },
+  { title: "Howl's Moving Castle", year: 2004, director: "Hayao Miyazaki", mins: 119, poster: "posters/howls-moving-castle.jpeg" },
+  { title: "Tales from Earthsea", year: 2006, director: "Gorō Miyazaki", mins: 115, poster: "posters/tales-from-earthsea.jpeg" },
+  { title: "Ponyo", year: 2008, director: "Hayao Miyazaki", mins: 101, poster: "posters/ponyo.jpeg" },
+  { title: "Arrietty", year: 2010, director: "Hiromasa Yonebayashi", mins: 94, poster: "posters/arrietty.jpeg" },
+  { title: "From Up on Poppy Hill", year: 2011, director: "Gorō Miyazaki", mins: 91, poster: "posters/from-up-on-poppy-hill.jpeg" },
+  { title: "The Wind Rises", year: 2013, director: "Hayao Miyazaki", mins: 126, poster: "posters/the-wind-rises.jpeg" },
+  { title: "The Tale of the Princess Kaguya", year: 2013, director: "Isao Takahata", mins: 137, poster: "posters/the-tale-of-the-princess-kaguya.jpeg" },
+  { title: "When Marnie Was There", year: 2014, director: "Hiromasa Yonebayashi", mins: 103, poster: "posters/when-marnie-was-there.jpeg" }
+    ];
+
+    // ---------- variables the page remembers ----------
+    var diary = {};          // saved films, for example diary[3] = { rating: 4, date: "...", review: "..." }
+    var filter = "all";      // all, seen or unseen
+    var currentFilm = 0;     // the film open in the pop-up
+    var currentRating = 0;   // the rating chosen in the pop-up
+
+    // get the saved diary from the browser (if there is one)
+    var saved = localStorage.getItem("ghibliboxd");
+    if (saved) {
+      diary = JSON.parse(saved);
+    }
+
+    // ---------- small helper functions ----------
+    function saveDiary() {
+      localStorage.setItem("ghibliboxd", JSON.stringify(diary));
+    }
+
+    function showMessage(text) {
+      var toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.style.display = "block";
+      setTimeout(function () {
+        toast.style.display = "none";
+      }, 1800);
+    }
+
+    // turns a rating like 3.5 into star symbols
+    function makeStars(rating) {
+      var html = "";
+      for (var i = 1; i <= 5; i++) {
+        var type = "";
+        if (rating >= i) {
+          type = "full";
+        } else if (rating >= i - 0.5) {
+          type = "half";
+        }
+        html += '<span class="star ' + type + '" onclick="clickStar(event, ' + i + ')">&#9733;</span>';
+      }
+      return html;
+    }
+
+    // ---------- tabs ----------
+    function showTab(name) {
+      document.getElementById("films-page").style.display = (name === "films") ? "block" : "none";
+      document.getElementById("diary-page").style.display = (name === "diary") ? "block" : "none";
+      document.getElementById("tab-films").className = (name === "films") ? "active" : "";
+      document.getElementById("tab-diary").className = (name === "diary") ? "active" : "";
+      window.scrollTo(0, 0);
+    }
+
+    // ---------- filters ----------
+    function setFilter(name) {
+      filter = name;
+      document.getElementById("chip-all").className = (name === "all") ? "chip active" : "chip";
+      document.getElementById("chip-seen").className = (name === "seen") ? "chip active" : "chip";
+      document.getElementById("chip-unseen").className = (name === "unseen") ? "chip active" : "chip";
+      showFilms();
+    }
+
+    // fill the director drop-down with every director (no repeats)
+    function fillDirectors() {
+      var names = [];
+      for (var i = 0; i < films.length; i++) {
+        if (names.indexOf(films[i].director) === -1) {
+          names.push(films[i].director);
+        }
+      }
+      names.sort();
+      var select = document.getElementById("director");
+      for (var j = 0; j < names.length; j++) {
+        select.innerHTML += "<option>" + names[j] + "</option>";
+      }
+    }
+
+    // ---------- film grid ----------
+    function showFilms() {
+      var search = document.getElementById("search").value.toLowerCase();
+      var director = document.getElementById("director").value;
+      var sort = document.getElementById("sort").value;
+
+      // 1. pick the films that match the search, director and filter
+      var list = [];
+      for (var i = 0; i < films.length; i++) {
+        var film = films[i];
+        var watched = (diary[i] !== undefined);
+
+        if (film.title.toLowerCase().indexOf(search) === -1) continue;
+        if (director !== "" && film.director !== director) continue;
+        if (filter === "seen" && !watched) continue;
+        if (filter === "unseen" && watched) continue;
+
+        list.push(i);
+      }
+
+      // 2. sort them
+      list.sort(function (a, b) {
+        if (sort === "oldest") return films[a].year - films[b].year || a - b;
+        if (sort === "newest") return films[b].year - films[a].year || b - a;
+        if (sort === "title") return films[a].title.localeCompare(films[b].title);
+        var ratingA = diary[a] ? diary[a].rating : 0;
+        var ratingB = diary[b] ? diary[b].rating : 0;
+        return ratingB - ratingA;
+      });
+
+      // 3. build the cards
+      var html = "";
+      for (var k = 0; k < list.length; k++) {
+        var id = list[k];
+        var f = films[id];
+        html += '<button class="card" onclick="openFilm(' + id + ')">';
+        html += '<div class="poster"><img src="' + f.poster + '" alt="' + f.title + ' poster">';
+        if (diary[id]) {
+          html += '<span class="seen">&#10003;</span>';
+        }
+        html += '</div>';
+        html += '<div class="card-title">' + f.title + '</div>';
+        html += '<div class="card-info">' + f.year + ', ' + f.mins + ' min</div>';
+        html += '</button>';
+      }
+      if (list.length === 0) {
+        html = '<div class="empty"><b>no films match</b><br>clear the search or pick another filter.</div>';
+      }
+      document.getElementById("grid").innerHTML = html;
+      document.getElementById("count").textContent = list.length + " of " + films.length + " films";
+
+      showProgress();
+    }
+
+    // the green progress bar at the top
+    function showProgress() {
+      var watchedCount = 0;
+      for (var i = 0; i < films.length; i++) {
+        if (diary[i] !== undefined) watchedCount++;
+      }
+      document.getElementById("progress-fill").style.width = (watchedCount / films.length * 100) + "%";
+      document.getElementById("progress-text").textContent = watchedCount + " of " + films.length + " films watched";
+    }
+
+    // ---------- pop-up window ----------
+    function openFilm(id) {
+      var film = films[id];
+      var entry = diary[id];
+      currentFilm = id;
+
+      document.getElementById("popup-poster").src = film.poster;
+      document.getElementById("popup-title").textContent = film.title;
+      document.getElementById("popup-facts").textContent = film.year + ", directed by " + film.director + ", " + film.mins + " min";
+
+      if (entry) {
+        currentRating = entry.rating;
+        document.getElementById("popup-date").value = entry.date;
+        document.getElementById("popup-review").value = entry.review;
+        document.getElementById("remove-btn").style.display = "inline-block";
+      } else {
+        currentRating = 0;
+        document.getElementById("popup-date").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("popup-review").value = "";
+        document.getElementById("remove-btn").style.display = "none";
+      }
+
+      showPopupStars();
+      document.getElementById("popup").showModal();
+    }
+
+    function closePopup() {
+      document.getElementById("popup").close();
+    }
+
+    function showPopupStars() {
+      document.getElementById("popup-stars").innerHTML = makeStars(currentRating);
+      document.getElementById("popup-rating-text").textContent = currentRating > 0 ? currentRating + " out of 5" : "not rated yet";
+    }
+
+    // clicking the left half of a star gives a half star
+    function clickStar(event, number) {
+      var star = event.target;
+      var value = number;
+      if (event.offsetX < star.offsetWidth / 2) {
+        value = number - 0.5;
+      }
+      if (value === currentRating) {
+        value = 0;   // clicking the same rating again clears it
+      }
+      currentRating = value;
+      showPopupStars();
+    }
+
+    function saveFilm() {
+      diary[currentFilm] = {
+        rating: currentRating,
+        date: document.getElementById("popup-date").value,
+        review: document.getElementById("popup-review").value,
+        time: Date.now()
+      };
+      saveDiary();
+      closePopup();
+      showMessage("saved to diary");
+      showFilms();
+      showDiary();
+    }
+
+    function removeFilm() {
+      delete diary[currentFilm];
+      saveDiary();
+      closePopup();
+      showMessage("removed from diary");
+      showFilms();
+      showDiary();
+    }
+
+    // ---------- diary tab ----------
+    function showDiary() {
+      var ids = [];
+      var totalRating = 0;
+      var ratedCount = 0;
+      var totalMinutes = 0;
+
+      for (var i = 0; i < films.length; i++) {
+        if (diary[i] !== undefined) {
+          ids.push(i);
+          totalMinutes += films[i].mins;
+          if (diary[i].rating > 0) {
+            totalRating += diary[i].rating;
+            ratedCount++;
+          }
+        }
+      }
+
+      // newest saved film first
+      ids.sort(function (a, b) {
+        return diary[b].time - diary[a].time;
+      });
+
+      var average = ratedCount > 0 ? (totalRating / ratedCount).toFixed(1) : "-";
+      var hours = (totalMinutes / 60).toFixed(1);
+
+      document.getElementById("stats").innerHTML =
+        '<div class="stat"><b>' + ids.length + '</b><span>films watched</span></div>' +
+        '<div class="stat pink"><b>' + average + '</b><span>average rating</span></div>' +
+        '<div class="stat"><b>' + hours + '</b><span>hours watched</span></div>';
+
+      var html = "";
+      for (var k = 0; k < ids.length; k++) {
+        var id = ids[k];
+        var f = films[id];
+        var d = diary[id];
+        html += '<button class="entry" onclick="openFilm(' + id + ')">';
+        html += '<img src="' + f.poster + '" alt="' + f.title + ' poster">';
+        html += '<div><b>' + f.title + '</b>';
+        html += '<p>' + f.year + ', watched ' + (d.date || "no date") + '</p>';
+        if (d.review !== "") {
+          html += '<p>' + d.review.replace(/</g, "&lt;") + '</p>';
+        }
+        html += '<div class="small">' + makeStars(d.rating) + '</div></div>';
+        html += '</button>';
+      }
+      if (ids.length === 0) {
+        html = '<div class="empty"><b>your diary is empty</b><br>open a film and save it to start.</div>';
+      }
+      document.getElementById("entries").innerHTML = html;
+    }
+
+    // ---------- start the page ----------
+    fillDirectors();
+    showFilms();
+    showDiary();
+  </script>
+
+</body>
+</html>
